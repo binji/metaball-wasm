@@ -20,15 +20,16 @@
 <body>
   <canvas width="320" height="200"></canvas>
   <script>
-    let instance;
-    document.body.addEventListener('click', () => instance.exports.reset(), true);
+    let blobCount = Math.min(Math.max((window.outerWidth / 80), 4), 10) | 0;
+    let blobs;
+    document.body.addEventListener('click', () => blobs(blobCount), true);
     fetch('metaball.wasm')
       .then(response => response.arrayBuffer())
       .then(bytes => WebAssembly.instantiate(bytes, {'': {rand: Math.random}}))
       .then(source => {
-        instance = source.instance;
-        let blobCount = Math.min(Math.max((window.outerWidth / 80), 4), 10) | 0;
-        instance.exports.setBlobCount(blobCount);
+        let instance = source.instance;
+        blobs = instance.exports.blobs;
+        blobs(blobCount);
         let canvasData = new Uint8Array(instance.exports.mem.buffer, 1024, 256000);
         let canvas = document.querySelector('canvas');
         let context = canvas.getContext('2d');

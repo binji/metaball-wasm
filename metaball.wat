@@ -10,6 +10,14 @@
     (f32.mul (call $random) (local.get 0))
     (local.get 1)))
 
+(global $blobsEnd (mut i32) (i32.const 40))
+(func (export "setBlobCount") (param i32)
+  (global.set $blobsEnd
+    (i32.mul
+      (local.get 0)
+      (i32.const 20)))
+  (call $start))
+
 (func $start (export "reset")
   (local $blob i32)
   (loop $blobs
@@ -23,7 +31,7 @@
     (br_if $blobs
       (i32.ne
         (local.tee $blob (i32.add (local.get $blob) (i32.const 20)))
-        (i32.const 200)))))
+        (global.get $blobsEnd)))))
 
 (start $start)
 
@@ -75,7 +83,7 @@
     (br_if $blobs
       (i32.ne
         (local.tee $blob (i32.add (local.get $blob) (i32.const 20)))
-        (i32.const 200))))
+        (global.get $blobsEnd))))
 
   ;; Loop over all pixels.
   (local.set $pixel (i32.const 1024))
@@ -120,7 +128,7 @@
         (br_if $blobs
           (i32.ne
             (local.tee $blob (i32.add (local.get $blob) (i32.const 20)))
-            (i32.const 200))))
+            (global.get $blobsEnd))))
 
       ;; sum = clamp(sum - 1, 0, 1) * 255
       (local.set $sum
